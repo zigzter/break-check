@@ -19,20 +19,29 @@ The user can either specify which packages they want this summary for, or which 
 - Rust + Ratatui
     - Would require learning Rust
 
-## Requirements
+## Requirements & Considerations
+- Start with support for Node packages, potentially add more languages in the future
+    - If more added, app should auto-detect what type of project it is
+- Support at least Linux & MacOS
 - App is added to PATH
 - App is run from the folder the user wants to check for breaking changes
 - Can be run with the following flags:
     - `--include`: packages to include, comma separated
     - `--exclude`: packages to exclude, comma separated
     - `--format=x`: stdout or file, if present skip the choice prompt in app
+- If `package.json` (or other dependecy file) is missing, exit and print error
 - Check GitHub API auth status on launch, prompt for auth if required
 - If GH auth present, present choice of stdout or file, default to stdout
 - Loop through list of packages to check, requesting update info from GH API
+    - Cache these results per package
 - Descriptions of updates must be parsed to grab all breaking changes
+- Handle packages that don't follow semver
 - Breaking changes get collected and separated by their respective version numbers, then printed to chosen output
+- Print out any packages that were missing changelogs
+- Print out error messages to a debug file to allow for easier issue resolving
 
 ## Planning To-Do
 - Figure out GitHub API auth choices
 - Possibly support [NPM API](https://registry.npmjs.org) fallback if GitHub doesn't show changes
 - Look into populating list of installed packages in app itself, and allow include/exclude within the app
+- Figure out best way to present data
