@@ -12,7 +12,7 @@ The user can either specify which packages they want this summary for, or which 
 - App pipes result to above choice
 
 ## Tech Options
-- Go + Bubbletea
+- Go + Bubbletea + Cobra
     - Good excuse to further improve my Go knowledge and comfort
 - TypeScript + Ink
     - Easiest choice for dev work, but user would need Node
@@ -34,6 +34,11 @@ The user can either specify which packages they want this summary for, or which 
 - If GH auth present, present choice of stdout or file, default to stdout
 - Loop through list of packages to check, requesting update info from GH API
     - Cache these results per package
+        - The program is meant to run once and exit, so we can't cache in memory
+        - Probable solution is to store these in a temp file, and clean the file if the program is run with a temp file older than 24h
+        - Allow a command to allow the user to clear this cache manually
+    - Run requests in parallel
+    - Limit requests to API limit
 - Descriptions of updates must be parsed to grab all breaking changes
 - Handle packages that don't follow semver
 - Breaking changes get collected and separated by their respective version numbers, then printed to chosen output
@@ -45,3 +50,4 @@ The user can either specify which packages they want this summary for, or which 
 - Possibly support [NPM API](https://registry.npmjs.org) fallback if GitHub doesn't show changes
 - Look into populating list of installed packages in app itself, and allow include/exclude within the app
 - Figure out best way to present data
+- Support JSON output? Would allow user to pipe output to something like `jq`
