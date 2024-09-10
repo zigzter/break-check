@@ -1,22 +1,51 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
-	"strings"
 
+	"github.com/google/go-github/v64/github"
 	"github.com/spf13/cobra"
 )
+
+var ghClient *github.Client
+
+func getGHClient() *github.Client {
+	if ghClient == nil {
+		ghClient = github.NewClient(nil)
+	}
+	return ghClient
+}
+
+type repoInfo struct {
+	Owner string
+	Name  string
+}
+
+func getRepos(packages []string) []repoInfo {
+	client := getGHClient()
+	results := make([]repoInfo, len(packages))
+	for _, pkg := range packages {
+		result, _, err := client.Search.Repositories(context.Background(), pkg, nil)
+		if err != nil {
+			fmt.Println("search error: ", err.Error())
+		}
+		if len(result.Repositories) > 0 {
+			firstResult := result.Repositories[0]
+			results = append(results, repoInfo{Name: *firstResult.Name, Owner: *firstResult.Owner.Login})
+		}
+	}
+	return results
+}
 
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run the program",
 	Run: func(cmd *cobra.Command, args []string) {
-		exclude, err := cmd.Flags().GetBool("exclude")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
+		repos := getRepos(args)
+		for _, repo := range repos {
+			fmt.Println(repo.Owner, repo.Name)
 		}
-		fmt.Printf("Running, exclude set to: %t, args: %s\n", exclude, strings.Join(args, ","))
 	},
 }
 
