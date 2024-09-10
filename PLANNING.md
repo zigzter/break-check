@@ -12,7 +12,7 @@ The user can either specify which packages they want this summary for, or which 
 - App pipes result to above choice
 
 ## Tech Options
-- Go + Bubbletea + Cobra
+- Go + Cobra
     - Good excuse to further improve my Go knowledge and comfort
 - TypeScript + Ink
     - Easiest choice for dev work, but user would need Node
@@ -29,8 +29,9 @@ The user can either specify which packages they want this summary for, or which 
     - `--include`: packages to include, comma separated
     - `--exclude`: packages to exclude, comma separated
     - `--format=x`: stdout or file, if present skip the choice prompt in app
+- Allow piping input to app in place of flags
 - If `package.json` (or other dependecy file) is missing, exit and print error
-- Check GitHub API auth status on launch, prompt for auth if required
+- Check GitHub API auth status on launch, if missing, exit with message to run auth command
 - If GH auth present, present choice of stdout or file, default to stdout
 - Loop through list of packages to check, requesting update info from GH API
     - Cache these results per package
