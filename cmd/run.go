@@ -22,12 +22,12 @@ type repoInfo struct {
 	Name  string
 }
 
-func getRepos(packages []string) []repoInfo {
+func getRepos(ctx context.Context, packages []string) []repoInfo {
 	client := getGHClient()
 	results := make([]repoInfo, len(packages))
 	for _, pkg := range packages {
 		// TODO: sanitize name, remove slash trailing subpackages
-		result, _, err := client.Search.Repositories(context.TODO(), pkg, nil)
+		result, _, err := client.Search.Repositories(ctx, pkg, nil)
 		if err != nil {
 			fmt.Println("search error: ", err.Error())
 			continue
@@ -44,7 +44,7 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run the program",
 	Run: func(cmd *cobra.Command, args []string) {
-		repos := getRepos(args)
+		repos := getRepos(cmd.Context(), args)
 		for _, repo := range repos {
 			fmt.Println(repo.Owner, repo.Name)
 		}
