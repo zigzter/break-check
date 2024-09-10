@@ -26,9 +26,11 @@ func getRepos(packages []string) []repoInfo {
 	client := getGHClient()
 	results := make([]repoInfo, len(packages))
 	for _, pkg := range packages {
-		result, _, err := client.Search.Repositories(context.Background(), pkg, nil)
+		// TODO: sanitize name, remove slash trailing subpackages
+		result, _, err := client.Search.Repositories(context.TODO(), pkg, nil)
 		if err != nil {
 			fmt.Println("search error: ", err.Error())
+			continue
 		}
 		if len(result.Repositories) > 0 {
 			firstResult := result.Repositories[0]
