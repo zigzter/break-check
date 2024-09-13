@@ -3,8 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/google/go-github/v64/github"
+	"github.com/gregjones/httpcache"
+	"github.com/gregjones/httpcache/diskcache"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +15,13 @@ var ghClient *github.Client
 
 func getGHClient() *github.Client {
 	if ghClient == nil {
-		ghClient = github.NewClient(nil)
+		// TODO: Set proper path for cache
+		transport := httpcache.NewTransport(diskcache.New("."))
+		transport.MarkCachedResponses = true
+		client := &http.Client{
+			Transport: transport,
+		}
+		ghClient = github.NewClient(client)
 	}
 	return ghClient
 }
@@ -24,10 +33,11 @@ type repoInfo struct {
 
 func getRepos(ctx context.Context, packages []string) []repoInfo {
 	client := getGHClient()
-	results := make([]repoInfo, len(packages))
+	results := []repoInfo{}
 	for _, pkg := range packages {
 		// TODO: sanitize name, remove slash trailing subpackages
-		result, _, err := client.Search.Repositories(ctx, pkg, nil)
+		result, res, err := client.Search.Repositories(ctx, pkg, nil)
+		fmt.Println(res)
 		if err != nil {
 			fmt.Println("search error: ", err.Error())
 			continue
