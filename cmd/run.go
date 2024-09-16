@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/zigzter/break-check/api"
+	"github.com/zigzter/break-check/parsers"
 )
 
 var runCmd = &cobra.Command{
@@ -18,8 +19,10 @@ var runCmd = &cobra.Command{
 			if err != nil {
 				fmt.Println("Error getting releases: ", err.Error())
 			}
-			fmt.Println(repo.Owner, repo.Name)
-			fmt.Printf("%+v", releases)
+			changes := parsers.ParseRelease(*releases[4])
+			for _, change := range changes {
+				fmt.Println(change)
+			}
 		}
 	},
 }
