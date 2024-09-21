@@ -14,6 +14,11 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := api.GetGHClient()
 		repos := api.GetRepoNames(cmd.Context(), args)
+		packageJson, err := parsers.ParsePackageJSON()
+		fmt.Println(packageJson)
+		if err != nil {
+			fmt.Println("Error parsing package.json: ", err.Error())
+		}
 		for _, repo := range repos {
 			releases, _, err := client.Repositories.ListReleases(cmd.Context(), repo.Owner, repo.Name, nil)
 			if err != nil {
