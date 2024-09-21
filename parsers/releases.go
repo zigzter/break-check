@@ -2,31 +2,26 @@ package parsers
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/google/go-github/v64/github"
+	"github.com/hashicorp/go-version"
 )
 
-func isBreakingChangeHeader(str string) bool {
-	lowercased := strings.ToLower(str)
-	return strings.Contains(lowercased, "breaking") && strings.Contains(lowercased, "#")
-}
-
-func ParseRelease(release github.RepositoryRelease) []string {
-	lines := strings.Split(*release.Body, "\n")
-	isInBreakingChanges := false
-	var breakingChangesList []string
-	for _, curr := range lines {
-		if isInBreakingChanges && strings.Contains(curr, "#") {
-			fmt.Println("end of breaking changes")
-			isInBreakingChanges = false
-		} else if isInBreakingChanges {
-			fmt.Println("within breaking changes")
-			breakingChangesList = append(breakingChangesList, curr)
-		} else if isBreakingChangeHeader(curr) {
-			fmt.Println("found breaking changes header")
-			isInBreakingChanges = true
+func ParseReleases(releases []*github.RepositoryRelease, afterVersion string) []string {
+	currVersion, err := version.NewVersion(afterVersion)
+	if err != nil {
+		fmt.Println("Error creating new go-version: ", err.Error())
+	}
+	for _, rel := range releases {
+		if *rel.Prerelease == false {
+			relVersion, err := version.NewVersion(rel.GetTagName())
+			if err != nil {
+				fmt.Println("Error creating new go-version from release: ", err.Error())
+			}
+			if relVersion.GreaterThan(currVersion) {
+				fmt.Println(rel.GetTagName())
+			}
 		}
 	}
-	return breakingChangesList
+	return []string{}
 }

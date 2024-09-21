@@ -19,10 +19,7 @@ var runCmd = &cobra.Command{
 			if err != nil {
 				fmt.Println("Error getting releases: ", err.Error())
 			}
-			changes := parsers.ParseRelease(*releases[4])
-			for _, change := range changes {
-				fmt.Println(change)
-			}
+			parsers.ParseReleases(releases, "v16.13.1")
 		}
 	},
 }
