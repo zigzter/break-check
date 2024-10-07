@@ -10,13 +10,12 @@ type repoInfo struct {
 	Name  string
 }
 
-func GetRepoNames(ctx context.Context, packages []string) []repoInfo {
+func GetRepoNames(ctx context.Context, packages [][2]string) []repoInfo {
 	client := GetGHClient()
 	results := []repoInfo{}
 	for _, pkg := range packages {
 		// TODO: sanitize name, remove slash trailing subpackages
-		result, res, err := client.Search.Repositories(ctx, pkg, nil)
-		fmt.Println(res)
+		result, _, err := client.Search.Repositories(ctx, pkg[0], nil)
 		if err != nil {
 			fmt.Println("search error: ", err.Error())
 			continue

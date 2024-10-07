@@ -5,21 +5,21 @@ import (
 	"os"
 )
 
-type Data struct {
+type PackageJSONData struct {
 	Name            string
 	Dependencies    map[string]string
 	DevDependencies map[string]string
 }
 
-func ParsePackageJSON() (Data, error) {
+func ParsePackageJSON() (PackageJSONData, error) {
 	content, err := os.ReadFile("package.json")
 	if err != nil {
-		return Data{}, err
+		return PackageJSONData{}, err
 	}
-	var parsedJson Data
+	var parsedJson PackageJSONData
 	err = json.Unmarshal(content, &parsedJson)
 	if err != nil {
-		return Data{}, err
+		return PackageJSONData{}, err
 	}
 	return parsedJson, nil
 }
